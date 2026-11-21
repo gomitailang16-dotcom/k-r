@@ -1,5 +1,5 @@
 // ページ本体とCDNのライブラリをキャッシュして、オフラインでも起動できるようにする
-const CACHE = "offline-ai-v2";
+const CACHE = "offline-ai-v3";
 const CORE = ["./", "index.html", "manifest.webmanifest"];
 
 self.addEventListener("install", e => {
