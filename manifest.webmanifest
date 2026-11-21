@@ -1,0 +1,9 @@
+{
+  "name": "オフラインAI",
+  "short_name": "オフラインAI",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#111418",
+  "theme_color": "#111418",
+  "icons": []
+}
