@@ -5,81 +5,89 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>オフラインAI</title>
 <link rel="manifest" href="manifest.webmanifest">
-<meta name="theme-color" content="#0e1116">
+<meta name="theme-color" content="#faf9f5">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="オフラインAI">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <style>
-  :root{--bg:#0e1116;--panel:#161b22;--panel2:#1c232c;--line:#28303b;--text:#e6ebf2;--sub:#8a94a3;--acc:#7aa7ff;--acc2:#a78bfa;--me:#22324d;--ok:#7ee2a8;--warn:#ffb86b}
+  :root{--bg:#faf9f5;--panel:#ffffff;--panel2:#f0eee6;--side:#f5f4ed;--line:#e4e1d6;--text:#2b2a27;--sub:#7b7870;--acc:#c96442;--acc-fg:#ffffff;--me:#eee9dc;--ok:#3f7d4e;--warn:#b5641a;--code:#f3f1e8;--serif:ui-serif,"Hiragino Mincho ProN","Yu Mincho",Georgia,serif;color-scheme:light}
+  @media(prefers-color-scheme:dark){:root{--bg:#262624;--panel:#30302e;--panel2:#3a3a37;--side:#1f1e1d;--line:#42413d;--text:#ece9e0;--sub:#a09d93;--acc:#d97757;--acc-fg:#1f1e1d;--me:#3a3935;--ok:#7ccf93;--warn:#e0a060;--code:#1f1e1d;color-scheme:dark}}
   *{box-sizing:border-box}
   html,body{height:100%;margin:0}
-  body{background:var(--bg);color:var(--text);font:15px/1.7 system-ui,-apple-system,"Hiragino Sans","Noto Sans JP",sans-serif;display:flex;flex-direction:column;overflow:hidden}
-  header{display:flex;align-items:center;gap:10px;padding:9px 14px;border-bottom:1px solid var(--line);background:var(--panel)}
-  header h1{font-size:15px;margin:0;flex:1;display:flex;align-items:center;gap:8px}
-  header h1 b{background:linear-gradient(90deg,var(--acc),var(--acc2));-webkit-background-clip:text;color:transparent}
-  .pill{font-size:12px;padding:2px 9px;border-radius:99px;border:1px solid var(--line);color:var(--sub);white-space:nowrap}
-  .pill.on{color:var(--ok);border-color:#2d5a45}.pill.off{color:var(--warn);border-color:#6a4a22}
+  body{background:var(--bg);color:var(--text);font:15px/1.75 system-ui,-apple-system,"Hiragino Sans","Noto Sans JP",sans-serif;display:flex;flex-direction:column;overflow:hidden}
+  header{display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--bg)}
+  header h1{font-size:18px;margin:0;flex:1;display:flex;align-items:center;gap:10px;font-weight:500}
+  header h1 b{font-family:var(--serif);font-weight:500;color:var(--text);letter-spacing:.02em}
+  .pill{font-size:12px;padding:2px 10px;border-radius:99px;border:1px solid var(--line);color:var(--sub);white-space:nowrap}
+  .pill.on{color:var(--ok)}.pill.off{color:var(--warn)}
   button,select,input{font:inherit;color:var(--text)}
-  button,select{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:6px 12px;cursor:pointer}
-  button:hover{border-color:var(--acc)}
-  button.primary{background:linear-gradient(135deg,var(--acc),var(--acc2));color:#0a1020;border:0;font-weight:700}
+  button,select{background:transparent;border:1px solid var(--line);border-radius:10px;padding:6px 13px;cursor:pointer}
+  button:hover{background:var(--panel2)}
+  button.primary{background:var(--acc);color:var(--acc-fg);border-color:var(--acc);font-weight:600}
+  button.primary:hover{filter:brightness(1.06);background:var(--acc)}
   button:disabled{opacity:.45;cursor:default}
-  input[type=text],input[type=number],textarea{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:7px 10px;color:var(--text);font:inherit}
-  input:focus,textarea:focus{outline:none;border-color:var(--acc)}
+  input[type=text],input[type=number],textarea{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:8px 11px;color:var(--text);font:inherit}
+  input:focus,textarea:focus,select:focus-visible,button:focus-visible{outline:2px solid color-mix(in srgb,var(--acc) 45%,transparent);outline-offset:1px}
   #login{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:24px;text-align:center}
+  #login h2{font-family:var(--serif);font-weight:500;font-size:28px}
   #login p{color:var(--sub);max-width:480px;margin:0}
   #app{flex:1;display:none;min-height:0}
-  #side{width:220px;border-right:1px solid var(--line);background:var(--panel);display:flex;flex-direction:column;min-height:0}
-  #side .top{padding:10px}
-  #side .top button{width:100%}
+  #side{width:230px;background:var(--side);display:flex;flex-direction:column;min-height:0;border-right:1px solid var(--line)}
+  #side .top{padding:12px}
+  #side .top button{width:100%;border-radius:12px}
   #list{flex:1;overflow:auto;padding:0 8px 8px}
-  .chat{padding:7px 10px;border-radius:8px;cursor:pointer;font-size:13px;display:flex;gap:6px;align-items:center}
+  .chat{padding:8px 10px;border-radius:10px;cursor:pointer;font-size:14px;display:flex;gap:6px;align-items:center}
   .chat span{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .chat:hover,.chat.cur{background:var(--panel2)}
   .chat i{font-style:normal;color:var(--sub);opacity:0}.chat:hover i{opacity:1}
   #work{flex:1;display:flex;min-width:0;min-height:0}
   #col{flex:1;display:flex;flex-direction:column;min-width:0;min-height:0}
-  #setup{padding:10px 14px;border-bottom:1px solid var(--line);display:flex;flex-wrap:wrap;gap:8px;align-items:center;background:var(--panel)}
-  #setup .seg{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
-  #setup .seg button{border:0;border-radius:0;background:transparent;color:var(--sub)}
+  #setup{padding:4px 16px 10px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;max-width:780px;width:100%;margin:0 auto}
+  #setup .seg{display:flex;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+  #setup .seg button{border:0;border-radius:0;color:var(--sub)}
   #setup .seg button.cur{background:var(--panel2);color:var(--text);font-weight:600}
   #url{width:200px}
-  #bar{flex:1;min-width:100px;height:6px;background:var(--panel2);border-radius:6px;overflow:hidden}
-  #bar div{height:100%;width:0;background:linear-gradient(90deg,var(--acc),var(--acc2));transition:width .2s}
-  #status{font-size:12px;color:var(--sub);width:100%}
+  #bar{flex:1;min-width:100px;height:4px;background:var(--panel2);border-radius:4px;overflow:hidden}
+  #bar div{height:100%;width:0;background:var(--acc);transition:width .2s}
+  #status{font-size:12px;color:var(--sub);width:100%;line-height:1.6}
   details#adv{width:100%;font-size:13px;color:var(--sub)}
-  details#adv .row{display:flex;gap:10px;align-items:flex-start;margin-top:8px;flex-wrap:wrap}
-  details#adv textarea{flex:1;min-width:240px;height:60px;resize:vertical}
-  #msgs{flex:1;overflow:auto;padding:18px 16px;scroll-behavior:smooth}
-  .m{max-width:780px;margin:0 auto 14px;padding:10px 14px;border-radius:12px;word-break:break-word}
-  .m.user{background:var(--me);margin-left:auto;margin-right:0;max-width:82%;white-space:pre-wrap}
-  .m.assistant{background:var(--panel);border:1px solid var(--line)}
-  .m h2,.m h3,.m h4{margin:.6em 0 .3em;line-height:1.4}
+  details#adv summary{cursor:pointer}
+  details#adv .row{display:flex;gap:12px;align-items:flex-start;margin-top:10px;flex-wrap:wrap}
+  details#adv .grow{flex:1;min-width:260px;display:flex;flex-direction:column;gap:6px}
+  details#adv textarea{width:100%;height:88px;resize:vertical}
+  details#adv .savebar{display:flex;gap:10px;align-items:center}
+  #msgs{flex:1;overflow:auto;padding:10px 16px 18px;scroll-behavior:smooth}
+  .m{max-width:740px;margin:0 auto 18px;word-break:break-word}
+  .m.user{background:var(--me);border-radius:18px;padding:9px 16px;width:fit-content;margin-left:auto;margin-right:auto;max-width:740px;white-space:pre-wrap;position:relative;left:0}
+  .m.assistant{font-family:var(--serif);font-size:16px;line-height:1.85;padding:2px 4px}
+  .m h2,.m h3,.m h4{margin:.7em 0 .3em;line-height:1.4;font-weight:600}
   .m ul,.m ol{margin:.4em 0;padding-left:1.4em}
-  .m code{background:#0b0f14;border:1px solid var(--line);padding:0 5px;border-radius:5px;font:13px ui-monospace,Menlo,Consolas,monospace}
-  .cb{margin:.6em 0;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#0b0f14}
-  .cb .ch{display:flex;justify-content:space-between;align-items:center;padding:4px 10px;background:var(--panel2);font-size:12px;color:var(--sub)}
-  .cb .ch button{padding:1px 8px;font-size:12px}
-  .cb pre{margin:0;padding:10px 12px;overflow:auto;max-height:340px}
-  .cb pre code{background:none;border:0;padding:0;white-space:pre}
-  #empty{max-width:640px;margin:8vh auto 0;text-align:center;color:var(--sub)}
-  #empty h2{color:var(--text);margin:0 0 6px}
-  .chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:14px}
-  .chips button{font-size:13px;border-radius:99px}
-  #form{padding:10px 16px 14px;display:flex;gap:8px;max-width:820px;width:100%;margin:0 auto}
-  #input{flex:1;resize:none;max-height:180px;border-radius:12px;padding:10px 12px}
+  .m code{background:var(--code);border:1px solid var(--line);padding:0 5px;border-radius:6px;font:13px ui-monospace,Menlo,Consolas,monospace}
+  .cb{margin:.7em 0;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--code);font-family:system-ui,sans-serif}
+  .cb .ch{display:flex;justify-content:space-between;align-items:center;padding:4px 12px;font-size:12px;color:var(--sub)}
+  .cb .ch button{padding:1px 9px;font-size:12px}
+  .cb pre{margin:0;padding:10px 14px;overflow:auto;max-height:340px}
+  .cb pre code{background:none;border:0;padding:0;white-space:pre;line-height:1.6}
+  #empty{max-width:640px;margin:10vh auto 0;text-align:center;color:var(--sub)}
+  #empty h2{font-family:var(--serif);font-weight:500;font-size:30px;color:var(--text);margin:0 0 10px}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:18px}
+  .chips button{font-size:13px;border-radius:99px;color:var(--sub)}
+  #form{display:flex;align-items:flex-end;gap:8px;max-width:740px;width:calc(100% - 32px);margin:0 auto 16px;padding:8px 8px 8px 18px;background:var(--panel);border:1px solid var(--line);border-radius:24px;box-shadow:0 2px 10px rgba(0,0,0,.05)}
+  #input{flex:1;resize:none;max-height:180px;border:0;background:transparent;padding:8px 0;border-radius:0}
+  #input:focus{outline:none}
+  #form button{border-radius:14px;height:38px}
   #user{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--sub)}
-  #user img{width:24px;height:24px;border-radius:50%}
-  #pv{width:46%;min-width:320px;border-left:1px solid var(--line);display:none;flex-direction:column;background:var(--panel)}
+  #user img{width:26px;height:26px;border-radius:50%}
+  #pv{width:46%;min-width:320px;border-left:1px solid var(--line);display:none;flex-direction:column;background:var(--bg)}
   #pv.on{display:flex}
   #pvbar{display:flex;gap:6px;align-items:center;padding:8px 10px;border-bottom:1px solid var(--line);flex-wrap:wrap}
   #pvbar .sp{flex:1}
   #pvbody{flex:1;position:relative;min-height:0;background:#fff}
   #frame{width:100%;height:100%;border:0;background:#fff;display:block}
-  #code{display:none;position:absolute;inset:0;width:100%;height:100%;border:0;border-radius:0;background:#0b0f14;font:13px/1.5 ui-monospace,Menlo,Consolas,monospace;resize:none;white-space:pre;overflow:auto}
-  #pvempty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#667;background:#10141a;text-align:center;padding:20px}
+  #code{display:none;position:absolute;inset:0;width:100%;height:100%;border:0;border-radius:0;background:var(--code);font:13px/1.5 ui-monospace,Menlo,Consolas,monospace;resize:none;white-space:pre;overflow:auto}
+  #pvempty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--sub);background:var(--panel2);text-align:center;padding:20px}
   #pvtoggle{display:none}
   @media(max-width:900px){
     #side{display:none}
@@ -128,10 +136,17 @@
         <div id="bar"><div></div></div>
         <div id="status"></div>
         <details id="adv">
-          <summary>詳細設定</summary>
+          <summary>⚙ 設定(AIへの指示など)</summary>
           <div class="row">
+            <div class="grow">
+              <label for="custom" style="color:var(--text)">AIへの指示(毎回必ず守らせます)</label>
+              <textarea id="custom" placeholder="例: 常に敬語で答えて。結論を先に書いて。"></textarea>
+              <div class="savebar">
+                <button id="saveCustom" class="primary" disabled>保存済み ✓</button>
+                <span id="saveNote">文字を入力すると、保存できます。</span>
+              </div>
+            </div>
             <label>温度 <input type="number" id="temp" min="0" max="2" step="0.1" value="0.7" style="width:70px"></label>
-            <textarea id="custom" placeholder="カスタム指示(例:常に敬語で、結論から答えて)"></textarea>
             <button id="export">会話を書き出し</button>
           </div>
         </details>
@@ -348,7 +363,15 @@ function fillModels(){
 $("#url").value=LS.get("oai_server_url","http://localhost:11434");
 $("#temp").value=LS.get("oai_temp",0.7);$("#custom").value=LS.get("oai_custom","");
 $("#temp").onchange=e=>LS.set("oai_temp",+e.target.value);
-$("#custom").onchange=e=>LS.set("oai_custom",e.target.value);
+function syncSave(){
+  const dirty=$("#custom").value.trim()!==LS.get("oai_custom","");
+  $("#saveCustom").disabled=!dirty;
+  $("#saveCustom").textContent=dirty?"保存":"保存済み ✓";
+  $("#saveNote").textContent=dirty?"まだ保存されていません。":($("#custom").value.trim()?"この指示を毎回AIに渡しています。":"文字を入力すると、保存できます。");
+}
+$("#custom").addEventListener("input",syncSave);
+$("#saveCustom").onclick=()=>{const v=$("#custom").value.trim();LS.set("oai_custom",v);$("#custom").value=v;syncSave()};
+syncSave();
 function initialStatus(){
   setStatus(backend==="web"
     ?(IOS?"iPad/iPhoneは1.5B前後のモデルが安定です(3B以上は落ちることあり)。初回のみダウンロード。共有ボタン→「ホーム画面に追加」で開くと、端末内のデータが消えにくくオフラインも安定します。"
@@ -416,7 +439,7 @@ async function generate(messages,onToken){
 }
 
 function buildMessages(){
-  const custom=$("#custom").value.trim();
+  const custom=(LS.get("oai_custom","")||"").trim();
   const sys=(mode==="app"?SYS_APP:SYS_CHAT)+(custom?"\n\n追加の指示: "+custom:"");
   if(mode==="app"){
     // アプリ作成: 文脈長を節約するため「現在のコード+今回の依頼」だけ渡す
@@ -439,7 +462,15 @@ async function send(){
   const paint=()=>{raf=0;out.innerHTML=md(acc);scrollEnd()};
   try{
     await generate(buildMessages(),t=>{acc+=t;if(!raf)raf=requestAnimationFrame(paint)});
-  }catch(e){if(e.name!=="AbortError")acc+=(acc?"\n\n":"")+"⚠ エラー: "+(e.message||e)}
+  }catch(e){
+    if(e.name!=="AbortError"){
+      const m=String(e.message||e);
+      if(/disposed|map async|device.*lost|compatible GPU/i.test(m)){
+        acc+=(acc?"\n\n":"")+"⚠ GPUが停止しました(メモリ不足の可能性)。アプリを完全に閉じて開き直し、もっと軽いモデルを選んでください。";
+        engine=null;$("#send").disabled=true;setStatus("GPUが停止しました。アプリを閉じて開き直してください。");
+      }else acc+=(acc?"\n\n":"")+"⚠ エラー: "+m;
+    }
+  }
   cancelAnimationFrame(raf);out.innerHTML=md(acc||"(応答なし)");
   cur.messages.push({role:"assistant",content:acc});
   if(mode==="app"){const h=extractHtml(acc);if(h){cur.code=h;syncPreview();showPane("prev");if(innerWidth<=900)$("#pv").classList.add("on")}}
